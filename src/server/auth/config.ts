@@ -3,6 +3,8 @@ import { type DefaultSession, type NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
 
 import { db } from "~/server/db";
+import {api} from "~/trpc/server";
+import {User} from "~/types/User";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -11,18 +13,9 @@ import { db } from "~/server/db";
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
 declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: {
-      id: string;
-      // ...other properties
-      // role: UserRole;
-    } & DefaultSession["user"];
+  interface Session {
+    user: User & DefaultSession["user"];
   }
-
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
 }
 
 /**
@@ -43,12 +36,16 @@ export const authConfig = {
       }
       return true;
     },
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    session: async ({ session, user }) => {
+      if (session.user) {
+        session.user.id = user.id;
+        session.user.expected_graduation_year = user.expected_graduation_year;
+        session.user.expected_graduation_month = user.expected_graduation_month;
+        session.user.is_admin = user.is_admin;
+        session.user.created_at = user.created_at;
+        session.user.updated_at = user.updated_at;
+      }
+      return session;
+    },
   },
 } satisfies NextAuthConfig;
