@@ -3,6 +3,8 @@ import { z } from "zod";
 
 import { env } from "~/env";
 import {PagedModelEnrichedCourseModel} from "~/types/Course";
+import {User} from "~/types/Course";
+import {UserUpdateEmail} from "~/server/email/UserUpdateEmail";
 
 const userUpdateSchema = z.object({
   id: z.number(),
@@ -15,7 +17,7 @@ const userUpdateSchema = z.object({
 const gatewayRouter = createTRPCRouter({
   updateUser: publicProcedure
     .input(userUpdateSchema)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const jwt = await getJwt(input.id);
 
       const url = `${env.GATEWAY_URL}/users/${input.id}`;
@@ -38,7 +40,19 @@ const gatewayRouter = createTRPCRouter({
         throw new Error("Failed to update user");
       }
 
-      return await response.json();
+      const updatedUser:User = await response.json() as User;
+
+      await ctx.resend.emails.send({
+        from: 'Plan4CU <plan4cu@rutmiandakash.com>',
+        to: updatedUser.email,
+        subject: 'Your account was updated.',
+        react: <UserUpdateEmail name={updatedUser.name} expectedGraduationMonth={updatedUser.expectedGraduationMonth} expectedGraduationYear={updatedUser.expectedGraduationYear}
+          majors={updatedUser.majors.map((major) => major.majorName)}
+        />
+      });
+
+
+      return updatedUser;
     }),
   getRelevantCourses: publicProcedure
     .input(

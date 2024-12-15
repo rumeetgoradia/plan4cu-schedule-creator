@@ -8,6 +8,8 @@ export interface User {
     id: number;
     email: string;
     name: string;
+    expectedGraduationMonth: string,
+    expectedGraduationYear: number,
     majors: Major[];
 }
 

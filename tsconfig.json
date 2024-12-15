@@ -9,9 +9,10 @@
     "moduleDetection": "force",
     "isolatedModules": true,
 
+
     /* Strictness */
     "strict": true,
-    "noUncheckedIndexedAccess": true,
+    "noUncheckedIndexedAccess": false,
     "checkJs": true,
 
     /* Bundled projects */

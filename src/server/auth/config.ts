@@ -3,7 +3,6 @@ import { type DefaultSession, type NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
 
 import { db } from "~/server/db";
-import {api} from "~/trpc/server";
 import {User} from "~/types/User";
 
 /**

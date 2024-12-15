@@ -3,7 +3,7 @@
 @tailwind utilities;
 @layer base {
   :root {
-    --columbia-blue: 206 100% 31%;
+    --columbia-blue: 200.4 100% 80.4%;
     --columbia-white: 0 0% 100%;
     --columbia-gray: 220 3% 46%;
     --columbia-black: 0 0% 0%;
